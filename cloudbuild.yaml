@@ -1,0 +1,28 @@
+steps:
+# 1. Build Docker image
+- name: 'gcr.io/cloud-builders/docker'
+  args: 
+    - 'build'
+    - '-t'
+    - 'us-central1-docker.pkg.dev/valued-decker-451513-p5/python-app-repo/python-app:$COMMIT_SHA'
+    - '.'
+
+# 2. Push image to Artifact Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: 
+    - 'push'
+    - 'us-central1-docker.pkg.dev/valued-decker-451513-p5/python-app-repo/python-app:$COMMIT_SHA'
+
+# 3. Deploy to Cloud Run
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+    - 'run'
+    - 'deploy'
+    - 'python-app'
+    - '--image=us-central1-docker.pkg.dev/valued-decker-451513-p5/python-app-repo/python-app:$COMMIT_SHA'
+    - '--platform=managed'
+    - '--region=us-central1'
+    - '--allow-unauthenticated'
+
+images:
+  - 'us-central1-docker.pkg.dev/valued-decker-451513-p5/python-app-repo/python-app:$COMMIT_SHA'
