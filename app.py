@@ -7,4 +7,4 @@ def home():
     return "Hello, Welcome to Groove Innovations! An AI and ML Learning platform company"
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=8080)
