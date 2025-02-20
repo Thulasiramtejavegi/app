@@ -32,3 +32,6 @@ images:
 
 substitutions:
   _COMMIT_SHA: 'latest'  # Default value (Cloud Build will override it)
+
+options:
+  logging: CLOUD_LOGGING_ONLY  # Fix for log storage issue
