@@ -5,7 +5,7 @@ steps:
       - 'build'
       - '-t'
       - 'us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$COMMIT_SHA'
-      - '--cache-from=us-central1-docker.pkg.dev/vy-python-project-451608/python-app-repo/python-app:latest'
+      - '--cache-from=us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:latest'
       - '.'
 
   # 2. Push image to Artifact Registry
@@ -13,24 +13,24 @@ steps:
     args:
       - 'push'
       - 'us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$COMMIT_SHA'
-  # 3. Deploy to Cloud Run
+
+  # 3. Create a Cloud Deploy release
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gcloud'
     args:
-      - 'run'
       - 'deploy'
-      - 'python-app'
-      - '--image=us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$COMMIT_SHA'
-      - '--platform=managed'
+      - 'releases'
+      - 'create'
+      - 'release-$COMMIT_SHA'  # Unique release name per commit
+      - '--delivery-pipeline=python-app-pipeline'  # Change to your actual pipeline name
       - '--region=us-central1'
-      - '--allow-unauthenticated'
-      - '--service-account=python-app-sa@my-python-project-451608.iam.gserviceaccount.com'  # Change if needed
+      - '--images=python-app=us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$COMMIT_SHA'
 
 images:
   - 'us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$COMMIT_SHA'
 
 substitutions:
-  _COMMIT_SHA: 'latest'  # Default value (Cloud Build will override it)
+  _COMMIT_SHA: 'latest'  # Default value (Cloud Build overrides this)
 
 options:
-  logging: CLOUD_LOGGING_ONLY  # Fix for log storage issue
+  logging: CLOUD_LOGGING_ONLY
