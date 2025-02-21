@@ -1,10 +1,10 @@
 steps:
-  # 1. Build Docker image with caching
+  # 1. Build Docker image
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
       - '-t'
-      - 'us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$COMMIT_SHA'
+      - 'us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$SHORT_SHA'
       - '--cache-from=us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:latest'
       - '.'
 
@@ -12,25 +12,25 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$COMMIT_SHA'
+      - 'us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$SHORT_SHA'
 
-  # 3. Create a Cloud Deploy release
+  # 3. Create a Cloud Deploy release with a shorter name
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gcloud'
     args:
       - 'deploy'
       - 'releases'
       - 'create'
-      - 'release-$COMMIT_SHA'  # Unique release name per commit
-      - '--delivery-pipeline=python-app-pipeline'  # Change to your actual pipeline name
+      - 'release-$SHORT_SHA'  # Shortened release name
+      - '--delivery-pipeline=python-app-pipeline'
       - '--region=us-central1'
-      - '--images=python-app=us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$COMMIT_SHA'
+      - '--images=python-app=us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$SHORT_SHA'
 
 images:
-  - 'us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$COMMIT_SHA'
+  - 'us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$SHORT_SHA'
 
 substitutions:
-  _COMMIT_SHA: 'latest'  # Default value (Cloud Build overrides this)
+  _SHORT_SHA: ${COMMIT_SHA:0:7}  # Shorten commit hash to 7 characters
 
 options:
   logging: CLOUD_LOGGING_ONLY
