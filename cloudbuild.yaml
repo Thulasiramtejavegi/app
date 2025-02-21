@@ -21,7 +21,7 @@ steps:
         -  '--image=us-central1-docker.pkg.dev/python-app-project-451613/python-app-repo/python-app:latest'
         -  '--platform=managed'
         -  '--region=us-central1'
-        -  '--allow=unauthenticated'
+        -  '--allow-unauthenticated'
         -  '--service-account=python-app-sa@python-app-project-451613.iam.gserviceaccount.com'
 
 images:
