@@ -12,3 +12,10 @@ deploy:
   cloudrun:
     projectid: my-python-project-451608
     region: us-central1
+
+profiles:
+  - name: target-1  # 👈 Add this profile to match Cloud Deploy
+    deploy:
+      cloudrun:
+        projectid: my-python-project-451608
+        region: us-central1
