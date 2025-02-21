@@ -1,0 +1,15 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: flask-python
+build:
+  artifacts:
+    - image: gcr.io/my-python-project-451608/flask-python
+      context: .
+      docker:
+        dockerfile: Dockerfile
+deploy:
+  cloudrun:
+    region: us-central1
+    projectid: my-python-project-451608
+    service: flask-python-service
