@@ -2,7 +2,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: 
         - 'build'
-        - '- t'
+        - '-t'
         -  'us-central1-docker.pkg.dev/python-app-project-451613/python-app-repo/python-app:latest'
         -  '--cache-from=us-central1-docker.pkg.dev/python-app-project-451613/python-app-repo/python-app:latest'
         - '.' 
