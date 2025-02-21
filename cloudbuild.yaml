@@ -12,3 +12,6 @@ steps:
 
 images:
 - 'us-central1-docker.pkg.dev/disco-beach-451611-h9/python-app-repo/python-app'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
