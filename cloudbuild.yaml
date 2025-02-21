@@ -1,0 +1,32 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: 
+        - 'build'
+        - 't'
+        -  'us-central1-docker.pkg.dev/python-app-project-451613/python-app-repo/python-app:latest'
+        -  '--cache-from=us-central1-docker.pkg.dev/python-app-project-451613/python-app-repo/python-app:latest'
+        - '.' 
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: 
+        - 'push'
+        - 'us-central1-docker.pkg.dev/python-app-project-451613/python-app-repo/python-app:latest'
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args: 
+        - 'run'
+        - 'deploy'
+        - 'python-app'
+        -  '--image=us-central1-docker.pkg.dev/python-app-project-451613/python-app-repo/python-app:latest'
+        -  '--platform=managed'
+        -  '--region=us-central1'
+        -  '--allow=unauthenticated'
+        -  '--service-account=python-app-sa@python-app-project-451613.iam.gserviceaccount.com'
+
+images:
+  - 'us-central1-docker.pkg.dev/python-app-project-451613/python-app-repo/python-app:latest'
+
+
+options:
+    logging: CLOUD_LOGGING_ONLY
