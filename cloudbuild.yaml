@@ -1,36 +1,36 @@
 steps:
-  # 1. Build Docker image
+  # 1. Build Docker image with caching
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
       - '-t'
-      - 'us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$SHORT_SHA'
-      - '--cache-from=us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:latest'
+      - 'us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$COMMIT_SHA'
+      - '--cache-from=us-central1-docker.pkg.dev/vy-python-project-451608/python-app-repo/python-app:latest'
       - '.'
 
   # 2. Push image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$SHORT_SHA'
-
-  # 3. Create a Cloud Deploy release with a shorter name
+      - 'us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$COMMIT_SHA'
+  # 3. Deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gcloud'
     args:
+      - 'run'
       - 'deploy'
-      - 'releases'
-      - 'create'
-      - 'release-$SHORT_SHA'  # Shortened release name
-      - '--delivery-pipeline=python-app-pipeline'
+      - 'python-app'
+      - '--image=us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$COMMIT_SHA'
+      - '--platform=managed'
       - '--region=us-central1'
-      - '--images=python-app=us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$SHORT_SHA'
+      - '--allow-unauthenticated'
+      - '--service-account=python-app-sa@my-python-project-451608.iam.gserviceaccount.com'  # Change if needed
 
 images:
-  - 'us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$SHORT_SHA'
+  - 'us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$COMMIT_SHA'
 
 substitutions:
-  _SHORT_SHA: ${COMMIT_SHA:0:7}  # Shorten commit hash to 7 characters
+  _COMMIT_SHA: 'latest'  # Default value (Cloud Build will override it)
 
 options:
-  logging: CLOUD_LOGGING_ONLY
+  logging: CLOUD_LOGGING_ONLY  # Fix for log storage issue
