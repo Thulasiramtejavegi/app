@@ -1,4 +1,4 @@
-apiVersion: skaffold/v2beta29
+apiVersion: skaffold/v4beta6  # Updated API version
 kind: Config
 metadata:
   name: flask-python
@@ -9,7 +9,7 @@ build:
       docker:
         dockerfile: Dockerfile
 deploy:
-  cloudrun:
+  cloudrun:  # This should now be supported
     region: us-central1
     projectid: my-python-project-451608
     service: flask-python-service
