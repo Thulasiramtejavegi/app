@@ -4,8 +4,8 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'us-central1-docker.pkg.dev/my-python-project-451608 /python-app-repo/python-app:$COMMIT_SHA'
-      - '--cache-from=us-central1-docker.pkg.dev/valued-decker-451513-p5/python-app-repo/python-app:latest'
+      - 'us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$COMMIT_SHA'
+      - '--cache-from=us-central1-docker.pkg.dev/vy-python-project-451608/python-app-repo/python-app:latest'
       - '.'
 
   # 2. Push image to Artifact Registry
