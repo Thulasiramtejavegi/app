@@ -4,7 +4,7 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'us-central1-docker.pkg.dev/valued-decker-451513-p5/python-app-repo/python-app:$COMMIT_SHA'
+      - 'us-central1-docker.pkg.dev/my-python-project-451608 /python-app-repo/python-app:$COMMIT_SHA'
       - '--cache-from=us-central1-docker.pkg.dev/valued-decker-451513-p5/python-app-repo/python-app:latest'
       - '.'
 
@@ -12,8 +12,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'us-central1-docker.pkg.dev/valued-decker-451513-p5/python-app-repo/python-app:$COMMIT_SHA'
-
+      - 'us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$COMMIT_SHA'
   # 3. Deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gcloud'
@@ -21,14 +20,14 @@ steps:
       - 'run'
       - 'deploy'
       - 'python-app'
-      - '--image=us-central1-docker.pkg.dev/valued-decker-451513-p5/python-app-repo/python-app:$COMMIT_SHA'
+      - '--image=us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$COMMIT_SHA'
       - '--platform=managed'
       - '--region=us-central1'
       - '--allow-unauthenticated'
-      - '--service-account=python-app-sa@valued-decker-451513-p5.iam.gserviceaccount.com'  # Change if needed
+      - '--service-account=python-app-sa@my-python-project-451608.iam.gserviceaccount.com'  # Change if needed
 
 images:
-  - 'us-central1-docker.pkg.dev/valued-decker-451513-p5/python-app-repo/python-app:$COMMIT_SHA'
+  - 'us-central1-docker.pkg.dev/my-python-project-451608/python-app-repo/python-app:$COMMIT_SHA'
 
 substitutions:
   _COMMIT_SHA: 'latest'  # Default value (Cloud Build will override it)
