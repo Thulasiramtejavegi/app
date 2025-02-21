@@ -12,5 +12,3 @@ deploy:
   cloudrun:
     projectid: my-python-project-451608
     region: us-central1
-    container:
-      name: flask-python-service
