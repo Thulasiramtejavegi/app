@@ -15,15 +15,15 @@ jobs:
 
       - name: Build docker image
         run: |
-          IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/my-image-name"
+          IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/python-flask"
           docker build -t $IMAGE_NAME:latest .
-          docker save -o my-image.tar $IMAGE_NAME:latest
+          docker save -o python-flask-image.tar $IMAGE_NAME:latest
 
       - name: upload docker image
         uses: actions/upload-artifact@v4
         with:
           name: docker-image
-          path: python-flask.tar
+          path: python-flask-image.tar
 
   push:
     runs-on: ubuntu-latest
@@ -38,7 +38,7 @@ jobs:
       - name: Load Docker Image
         run: |
           IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/my-image-name"
-          docker load -i python=flask.tar
+          docker load -i python-flask-image.tar
 
       - name: Login to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
