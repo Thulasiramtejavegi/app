@@ -47,4 +47,4 @@ jobs:
       - name: Push Docker Image
         run: |
           IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/my-image-name"
-          docker push $IMAGE_NAME:latest1
+          docker push $IMAGE_NAME:latest
