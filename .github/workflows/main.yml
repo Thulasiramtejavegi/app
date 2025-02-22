@@ -21,6 +21,7 @@ jobs:
         run: |
           IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/my-image-name"
           docker build -t $IMAGE_NAME:latest .
+          docker save -o my-image.tar $IMAGE_NAME:latest
 
       - name: Upload Docker Image
         uses: actions/upload-artifact@v4
@@ -43,10 +44,12 @@ jobs:
           IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/my-image-name"
           docker load -i my-image.tar
 
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
       - name: Push Docker Image to Docker Hub
         run: |
           IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/my-image-name"
-          docker tag $IMAGE_NAME:latest $IMAGE_NAME:latest
           docker push $IMAGE_NAME:latest
 
   deploy:
@@ -57,6 +60,7 @@ jobs:
       - name: Authenticate with Google Cloud
         run: |
           echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | gcloud auth activate-service-account --key-file=-
+          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
       - name: Deploy to Google Cloud Run from Docker Hub
         run: |
