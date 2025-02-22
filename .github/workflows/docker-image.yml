@@ -25,21 +25,22 @@ jobs:
           fi
           echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
-      - name: Build the Docker image
+      - name: Build and Tag Docker image
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         run: |
           IMAGE_NAME="$DOCKER_USERNAME/my-image-name"
-          TIMESTAMP_TAG=$(date +%s)
+          TIMESTAMP_TAG=$(date +%s)  # Generate timestamp once and store it
+
+          echo "Using tag: $TIMESTAMP_TAG"
 
           docker build . -t $IMAGE_NAME:latest
           docker tag $IMAGE_NAME:latest $IMAGE_NAME:$TIMESTAMP_TAG
 
-      - name: Push Docker image to Docker Hub
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
+          echo "TIMESTAMP_TAG=$TIMESTAMP_TAG" >> $GITHUB_ENV
+
+      - name: Push Docker images to Docker Hub
         run: |
-          IMAGE_NAME="$DOCKER_USERNAME/my-image-name"
-          
           docker push $IMAGE_NAME:latest
-          docker push $IMAGE_NAME:$(date +%s) # Push timestamped tag too (optional)
+          docker push $IMAGE_NAME:$TIMESTAMP_TAG
