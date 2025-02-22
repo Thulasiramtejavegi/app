@@ -14,15 +14,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Verify Docker Login
-        run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin || exit 1
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Build Docker Image
         run: |
-          IMAGE_NAME="gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-image-name"
+          IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/my-image-name"
           docker build -t $IMAGE_NAME:latest .
-          docker save -o my-image.tar $IMAGE_NAME:latest
 
       - name: Upload Docker Image
         uses: actions/upload-artifact@v4
@@ -42,17 +40,12 @@ jobs:
 
       - name: Load Docker Image
         run: |
-          IMAGE_NAME="gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-image-name"
+          IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/my-image-name"
           docker load -i my-image.tar
 
-      - name: Authenticate with Google Cloud
+      - name: Push Docker Image to Docker Hub
         run: |
-          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | gcloud auth activate-service-account --key-file=-
-          gcloud auth configure-docker
-
-      - name: Push Docker Image to GCR
-        run: |
-          IMAGE_NAME="gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-image-name"
+          IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/my-image-name"
           docker tag $IMAGE_NAME:latest $IMAGE_NAME:latest
           docker push $IMAGE_NAME:latest
 
@@ -65,10 +58,10 @@ jobs:
         run: |
           echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | gcloud auth activate-service-account --key-file=-
 
-      - name: Deploy to Google Cloud Run
+      - name: Deploy to Google Cloud Run from Docker Hub
         run: |
           gcloud run deploy my-cloud-run-service \
-            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-image-name:latest \
+            --image docker.io/${{ secrets.DOCKER_USERNAME }}/my-image-name:latest \
             --platform managed \
             --region us-central1 \
             --allow-unauthenticated
